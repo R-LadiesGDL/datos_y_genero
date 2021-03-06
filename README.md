@@ -25,6 +25,7 @@ library(plotly)
 Los datos que se utilizan para ñla visualización es a partir de la ENOE 2020, que cuenta con información sobre el trabajo del hogar (doméstico), la base de datos original se encuentra en el portal de INEGI https://www.inegi.org.mx/contenidos/programas/enoe/15ymas/microdatos/enoe_n_2020_trim4_dta.zip
 
 Imagen ilustrativa: 
+
 ![image](https://user-images.githubusercontent.com/75498886/110187720-f31e6800-7dde-11eb-8203-12f2d2ab6620.png)
 
 Para el taller se utiliza el formato .dta, esto para hacer uso de las variables etiquetadas (labelled).
