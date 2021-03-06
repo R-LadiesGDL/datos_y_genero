@@ -51,7 +51,7 @@ SDEMT120 %>%
  ggplot(aes(x = as_factor(eda7c), y = tdhr, fill=as_factor(sex), text=text)) +
     geom_col(position = "dodge") + ylim(0,1000000)+
     scale_fill_manual(values = c("turquoise3","#6a2fad")) +
-    labs(title = "Gráfico 1.",
+    labs(title = "",
          fill = "Sexo",
          y="",
          x="")+
