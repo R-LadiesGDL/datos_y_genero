@@ -1,7 +1,7 @@
 # Datos y género:
-## Visualizar el trabajo del hogar en MX.
+### Visualizar el trabajo del hogar en MX.
 
-# 
+ 
 En el marco de las actividades del Open Data Day R-Ladies Guadalajara se une a [SocialTIC](https://socialtic.org/) para presentar un taller introductorio a la visualización el trabajo del hogar en México.
 
 
@@ -33,3 +33,4 @@ Imagen ilustrativa:
 ![image](https://user-images.githubusercontent.com/75498886/110187720-f31e6800-7dde-11eb-8203-12f2d2ab6620.png)
 
 Para el taller se utiliza el formato .dta, esto para hacer uso de las variables etiquetadas (labelled).
+#
