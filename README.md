@@ -16,10 +16,10 @@ En el marco de las actividades del Open Data Day R-Ladies Guadalajara se une a [
 
 #### Package requerida
 ```
-install.packages(c("haven", "ggplot2", "viridis", "dplyr", "rgdal", "sf",
+install.packages(c("prettydoc", "haven", "ggplot2", "viridis", "dplyr", "rgdal", "sf",
                  "plotly", "scales",  "leaflet", "proj4")
 
-
+library(prettydoc)
 library(haven)
 library(ggplot2)
 library(dplyr)
@@ -41,4 +41,8 @@ Imagen ilustrativa:
 ![image](https://user-images.githubusercontent.com/75498886/110187720-f31e6800-7dde-11eb-8203-12f2d2ab6620.png)
 
 Para el taller se utiliza el formato .dta, esto para hacer uso de las variables etiquetadas (labelled).
+
+El descriptor o cuardenillo de la base se encuentra en: https://www.inegi.org.mx/contenidos/programas/enoe/15ymas/doc/fd_c_bas_amp_15ymas.pdf
+
+
 #
