@@ -26,7 +26,9 @@ library(sf)
 library(plotly)
 
 ```
-Los datos que se utilizan para ñla visualización es a partir de la ENOE 2020, que cuenta con información sobre el trabajo del hogar (doméstico), la base de datos original se encuentra en el portal de INEGI https://www.inegi.org.mx/contenidos/programas/enoe/15ymas/microdatos/enoe_n_2020_trim4_dta.zip
+Los datos que se utilizan para ñla visualización es a partir de la ENOE 2020, que cuenta con información sobre el trabajo del hogar (doméstico), la base de datos original se encuentra en el portal de INEGI https://www.inegi.org.mx/contenidos/programas/enoe/15ymas/microdatos/enoe_n_2020_trim4_dta.zip 
+
+Es necesario descomprimir los archivos del zip.
 
 Imagen ilustrativa: 
 
