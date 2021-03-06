@@ -1,0 +1,232 @@
+---
+title: "Trabajo del hogar."
+author: "R-Ladies Guadalajara."
+date: "2021-03-06"
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
+---
+
+
+```{r, message=FALSE, echo=TRUE, include=FALSE}
+
+# Librerías a utilizar:
+library(prettydoc) #https://prettydoc.statr.me/themes.html
+library(haven)
+library(ggplot2)
+library(dplyr)
+library(viridis)
+library(DT)
+
+library(proj4)
+library(leaflet)
+library(scales)
+library(rgdal)
+library(sf) 
+library(plotly)
+
+# Link de descargar para la base de dato
+"https://drive.google.com/file/d/11_FkMmGLmufJ0Pk9xX08cIZD-lzrID3z/view?usp=sharing"
+
+
+SDEMT120 <- read_dta("SDEMT120.dta")
+
+
+# Primer acercamiento
+
+SDEMT120 %>%
+    group_by(as_factor(tue2)) %>% 
+    summarise(Conteo=comma(sum(wt=fac)))
+
+
+
+SDEMT120 %>%
+    filter(tue2==6) %>% 
+    group_by(as_factor(sex)) %>% 
+    summarise(Conteo=sum(wt=fac),
+              Porcentaje= percent(Conteo/2405530))
+
+SDEMT120 %>%
+  filter(tue2==6) %>%
+  group_by(as_factor(ent)) %>%
+  summarise(tdhr=sum(wt=fac))
+
+
+
+```
+
+## Perfil de las trabajadoras del hogar
+El trabajo del hogar es una labor que en su mayoría se lleva a cabo por mujeres, se caracteriza por realizarse en los espacios privados como son los hogares.
+
+Al ser una labor ligada a la naturaleza de las mujeres este  suele considerársele como un empleo feminizado. El interés de analizarlo recae en la proporción de mujeres que se dedican a esto y que por distintos contexto se encasilla a una trabajo precarizado.
+
+
+```{r, message=F, echo=T, include=F}
+SDEMT120 %>%
+    filter(tue2==6,
+           eda7c>=1,
+           eda7c<=6) %>% 
+    group_by(sex, eda7c) %>% 
+    dplyr::summarise(tdhr= sum(wt=fac)) %>% 
+    mutate(text = paste("Total de trabajadoras del hogar: ", tdhr, sep=""))%>%
+ ggplot(aes(x = as_factor(eda7c), y = tdhr, fill=as_factor(sex), text=text)) +
+    geom_col(position = "dodge") + ylim(0,1000000)+
+    scale_fill_manual(values = c("turquoise3","#6a2fad")) +
+    labs(title = "",
+         fill = "Sexo",
+         y="",
+         x="")+
+    theme_minimal()+
+    theme(legend.position = "bottom") -> edad_sexo
+
+```
+
+
+```{r, echo=F, fig.width = 12, fig.height = 5, fig.align = "center"}
+ggplotly(edad_sexo, tooltip="text")
+```
+
+
+## Condiciones laborales:
+
+El trabajo del hogar por desenvolverse en un plano privado como es son los hogares se ausenta de ciertas actividades que funcionen como regulador de este, que permita un empleo digno y justo.
+
+
+
+```{r, message=F, echo=T, include=F}
+
+  
+SDEMT120 %>%
+  filter(tue2==6) %>% 
+  group_by(as_factor(tip_con)) %>% 
+  summarise(Total= comma(sum(wt=fac),
+            `%`= percent(Total/2405530)) %>%  
+  datatable(filter = 'top',colnames = c('Tipo de contrato', 'Total', 'Porcentaje'), 
+            options = list(columnDefs = list(list(className = 'dt-left', targets = 3:5))))->contrato
+
+```
+
+
+```{r, echo=F, fig.width = 12, fig.height = 5, fig.align = "center"}
+contrato
+```
+
+
+Un ejemplo de la condición del trabajo del hogar es la carencia de prestaciones laborales, como se muestra en la siguiente gráfica.
+
+
+
+```{r, message=F, echo=T, include=F}
+
+SDEMT120 %>%
+  filter(tue2==6,
+         pre_asa>=1,
+         pre_asa<=2) %>%  
+  group_by(pre_asa) %>% 
+  summarise(`Prestacion laborales`= sum(wt=fac),
+            `%`= percent(`Prestacion laborales`/2405530)) %>% 
+  ggplot(aes(x=as_factor(pre_asa), y=`Prestacion laborales`, fill=as_factor(pre_asa)))+
+  geom_col() + 
+  scale_fill_manual(values = c("#97db21", "#21dbb0")) +
+  geom_text(aes(x=as_factor(pre_asa),
+                y=`Prestacion laborales`,
+                label=comma(`Prestacion laborales`), accuracy=1), hjust=0.5, vjust=-1)+
+  labs(title = "Gráfico 3.",
+         fill = "",
+         y="",
+         x="")+
+    theme_minimal()+
+    theme(axis.text.x = element_text(angle = 0, vjust = 0.5, hjust=1))+
+    theme(legend.position = "bottom")
+
+
+```
+
+
+
+
+
+## Comparación entre unidad económica donde se labora. 
+
+En el gráfico siguiente se muestra la relación de tres variables, en los ejes principales encontramos el ingreso mensual promedio y los años de educación formal, así se pondera los tamaños de los círculos de acuerdo al total de empleados y empleadas en cada rubro.
+
+```{r, message=F, echo=T, include=F}
+SDEMT120 %>% 
+  group_by(tue2, anios_esc) %>% 
+  filter(anios_esc>=0L & anios_esc<=98L,
+        tue2>=1) %>% 
+  summarise(total=sum(wt=fac),
+            ingreso=mean(ingocup)) %>%  
+  mutate(Ingreso=round(ingreso,2)) %>%
+  mutate(Población=round(total,0)) %>% #Aquí termina la transformación de variables
+  mutate(text = paste("Tipo de Unidad Económica: ", tue2,
+                      "\nIngreso mensual : ", Ingreso, 
+                      "\nPoblación: ", Población, 
+                      "\nAños de escolaridad formal: ", anios_esc, sep="")) %>%
+   ggplot(aes(x=as_factor(anios_esc), y=Ingreso, size = Población, color = as_factor(tue2), text=text)) +
+    geom_point(alpha=1) +
+    scale_size(range = c(1.4, 19), name="Tipo de Unidad Económica") +
+    scale_color_viridis(discrete=TRUE, guide=FALSE) +
+  labs(title = "Gráfico 1.",
+       subtitle = "El tamaño de los círculos corresponde al total de trabajadorxs.",
+       y="Ingreso mensual promedio",
+       x= "Años de educación formal adquirida",
+       caption = "Elaboración propia con base a la ENOE 2020, INEGI.")+
+    theme_minimal() +
+    theme(legend.position="left")->puntos
+  
+```
+
+
+
+
+```{r, message=F, echo=F, include=TRUE, fig.width = 12, fig.height = 5, fig.align = "center"}
+ggplotly(puntos, tooltip = "text")
+```
+ 
+
+ 
+## Mapa por entidades de México del total de trabajadoras del hogar remuneradas.
+El mapa muestra con los colores morados (obscuros) la mayor presencia de trabajadoras del hogar. Deslice el cursos sobre las entidades para más información.
+
+
+
+```{r, message=F, echo=T, include=F}
+
+SDEMT120 %>%
+  filter(tue2==6) %>%
+  group_by(as_factor(ent)) %>%
+  summarise(tdhr=sum(wt=fac))->base
+
+#Geometrías/ shapes para mapear      
+ent_shp <- st_read("C:/Users/Admin/Desktop/R _Ladies/conjunto_de_datos/00ent.shp")
+
+#Union de la base con el shape
+merge<- merge(ent_shp, base, by.x = "NOMGEO", by.y = "as_factor(ent)", all.x = TRUE)
+
+merge %>% 
+  mutate(text = paste("Total de trabajadoras del hogar: ", tdhr, "\nEntidad: ", NOMGEO, "\nClave de entidad: ", CVE_ENT, sep=""))%>%
+ggplot(aes(fill=as.factor(tdhr), text=text))+
+  geom_sf()+
+  scale_fill_viridis_d(option="D", direction=-1)+  
+  labs(title = "Total de víctimas de feminicidios en el año 2020",
+       caption = "Elaborado con base a los datos abiertos del SESNP, 2020",
+       fill="Víctimas de feminicidios")+
+  theme_minimal()+
+  theme(legend.position = "none")->mapa
+```
+
+
+
+```{r, echo=F, fig.width = 12, fig.height = 5, fig.align = "center"}
+ggplotly(mapa, tooltip="text")
+```
+
+
+
+
+
+
+
+
