@@ -17,7 +17,7 @@ En el marco de las actividades del Open Data Day R-Ladies Guadalajara se une a [
 #### Package requerida
 ```
 install.packages(c("prettydoc", "haven", "ggplot2", "viridis", "dplyr", "rgdal", "sf",
-                 "plotly", "scales",  "leaflet", "proj4")
+                 "plotly", "scales",  "leaflet", "proj4"))
 
 library(prettydoc)
 library(haven)
